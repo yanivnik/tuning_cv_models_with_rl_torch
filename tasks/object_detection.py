@@ -1,6 +1,6 @@
 import torch
 import torchvision
-from transformers import DetrForObjectDetection, DetrFeatureExtractor, DetrImageProcessor
+from transformers import DetrForObjectDetection, DetrImageProcessor
 
 from torch.utils.tensorboard import SummaryWriter
 from torchmetrics.detection.mean_ap import MeanAveragePrecision
@@ -86,7 +86,6 @@ class DetectionTask(object):
 
     @staticmethod
     @torch.no_grad()
-    #def compute_reward(preds, targets, type='map'):
     def compute_reward(preds, targets, type='map'):
         """
         Computes reward for a given batch of images.
@@ -132,11 +131,11 @@ class DetectionTask(object):
 
     @staticmethod
     def detect_objects(model: DetrForObjectDetection, 
-                      feature_extractor: DetrFeatureExtractor, 
+                      image_processor: DetrImageProcessor, 
                       pixel_values: torch.tensor,
                       pixel_mask: torch.tensor,
                       orig_sizes: list,
                       device: str = 'cuda'):
         outputs = model(pixel_values=pixel_values.to(device), pixel_mask=pixel_mask.to(device))
-        results = feature_extractor.post_process_object_detection(outputs, target_sizes=orig_sizes)
+        results = image_processor.post_process_object_detection(outputs, target_sizes=orig_sizes)
         return results
